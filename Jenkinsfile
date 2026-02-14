@@ -18,3 +18,11 @@ stage('Push Image') {
         '''
     }
 }
+stage('Deploy Container') {
+    steps {
+        sh '''
+        docker rm -f ci-mini-container || true
+        docker run -d --name ci-mini-container -p 5002:5000 abhignanshetty/ci-mini-app:latest
+        '''
+    }
+}
