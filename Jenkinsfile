@@ -26,3 +26,12 @@ stage('Deploy Container') {
         '''
     }
 }
+stage('Deploy') {
+    steps {
+        sh '''
+        docker stop ci-app || true
+        docker rm ci-app || true
+        docker run -d --name ci-app -p 5002:5000 abhignanshetty/ci-mini-app:latest
+        '''
+    }
+}
