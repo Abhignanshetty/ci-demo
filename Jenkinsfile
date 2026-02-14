@@ -5,7 +5,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Code pulled from GitHub'
+                echo 'Pulling code from GitHub'
             }
         }
 
@@ -17,7 +17,10 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                sh 'docker run --rm ci-mini-app'
+                sh '''
+                docker rm -f ci-mini-container || true
+                docker run -d --name ci-mini-container -p 5001:5000 ci-mini-app
+                '''
             }
         }
     }
