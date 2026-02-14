@@ -10,3 +10,11 @@ stage('Docker Login') {
         }
     }
 }
+stage('Push Image') {
+    steps {
+        sh '''
+        docker tag ci-mini-app abhignanshetty/ci-mini-app:latest
+        docker push abhignanshetty/ci-mini-app:latest
+        '''
+    }
+}
