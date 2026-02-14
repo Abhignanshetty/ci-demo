@@ -2,9 +2,22 @@ pipeline {
     agent any
 
     stages {
-        stage('Hello') {
+
+        stage('Checkout') {
             steps {
-                echo 'Hello from Jenkins'
+                echo 'Code pulled from GitHub'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t ci-mini-app .'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh 'docker run --rm ci-mini-app'
             }
         }
     }
