@@ -1,37 +1,28 @@
 
-stage('Docker Login') {
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'docker-hub-creds',
-            usernameVariable: 'DOCKER_USER',
-            passwordVariable: 'DOCKER_PASS'
-        )]) {
-            sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/Abhignashetty/ci-demo.git'
+            }
         }
-    }
-}
-stage('Push Image') {
-    steps {
-        sh '''
-        docker tag ci-mini-app abhignanshetty/ci-mini-app:latest
-        docker push abhignanshetty/ci-mini-app:latest
-        '''
-    }
-}
-stage('Deploy Container') {
-    steps {
-        sh '''
-        docker rm -f ci-mini-container || true
-        docker run -d --name ci-mini-container -p 5002:5000 abhignanshetty/ci-mini-app:latest
-        '''
-    }
-}
-stage('Deploy') {
-    steps {
-        sh '''
-        docker stop ci-app || true
-        docker rm ci-app || true
-        docker run -d --name ci-app -p 5002:5000 abhignanshetty/ci-mini-app:latest
-        '''
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t flask-demo .'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh '''
+                docker stop flask || true
+                docker rm flask || true
+                docker run -d -p 5000:5000 --name flask flask-demo
+                '''
+            }
+        }
     }
 }
